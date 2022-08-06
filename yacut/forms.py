@@ -1,20 +1,19 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, Optional
 
-AVAILABLE_SYMBOLS = ''
+MIN_LENGTH = 6
+MAX_LENGTH = 16
 
 
 class ConvertURLForm(FlaskForm):
-    original_link = StringField(
-        'Вставьте ссылку, которую нужно сократить',
-        # validators=[DataRequired(message='Обязательное поле'), ]
+    original = StringField(
+        'Оригинальный URL',
+        validators=[DataRequired()]
     )
-    short_link = StringField(
-        'Впишите желаемый идентификатор для ссылки'
-        '(большие и маленькие латинские буквы, цифры 0-9),'
-        'длина не должна превышать 6 символов',
-        # дописать кастомный валидатор на основе регулярки
-        # validators=[Length(6, 6, message='Длина идентификатора не должна превышать 6 символов'), ]
+    # дописать кастомный валидатор на основе регулярки
+    short = StringField(
+        'Желаемый короткий идентификатор',
+        validators=[Optional(), Length(MIN_LENGTH, MAX_LENGTH)]
     )
     submit = SubmitField('Сконвертировать')

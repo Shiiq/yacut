@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="{{ url_for('static', filename='img/fav/favicon.ico') }}" type="image">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/fav/apple-touch-icon.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/fav/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/fav/favicon-16x16.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/carousel.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <title>YaCut - укоротитель ссылок</title>
+</head>
+<body>
+  <form method="POST" novalidate>
+  {{ form.csrf_token }}
+    <div>
+      <div>
+        <p>{{ form.original(class="form-control form-control-lg py-2 mb-3", placeholder=form.original.label.text) }}</p>
+        <p>
+          {% if form.original.errors %}
+            {% for error in form.original.errors %}
+              <p><span style="color:red">{{ error }}</span></p>
+            {% endfor %}
+          {% endif %}
+        </p>
+      </div>
+      <div>
+        <p>{{ form.short(class="form-control form-control-lg py-2 mb-3", placeholder=form.short.label.text) }}</p>
+        <p>
+          {% if form.short.errors %}
+            {% for error in form.short.errors %}
+              <p><span style="color:red">{{ error }}</span></p>
+            {% endfor %}
+          {% endif %}
+        </p>
+      </div>
+      <p>{{ form.submit(class="btn btn-primary", placeholder=form.submit.label.text) }}</p>
+    </div>
+  </form>
+</body>

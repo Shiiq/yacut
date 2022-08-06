@@ -1,48 +1,52 @@
 import os
 
-from flask import Flask, Response, render_template
+from flask import Flask, Response, flash, redirect, render_template
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-
-from .forms import ConvertURLForm
-# from models import URL_map
 # from settings import Config
 
-app = Flask(__name__)
 SECRET_KEY = os.urandom(32)
+
+app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config.from_object(Config)
-# db = SQLAlchemy(app)
-# migrate = Migrate(app, db)
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+from .forms import ConvertURLForm
+from .models import URL_map
+from .utils import get_unique_short_id
 
 
 @app.route('/')
 def page_view():
-    return Response('TEST PAGE ARRRWW')
+    return Response('MAIN PAGE ARRRWW')
 
 
 @app.route('/convert', methods=['GET', 'POST'])
-def convert_url():
+def convert():
     form = ConvertURLForm()
-    print('TERMINAL INPUT TEST')
-    print(form.__dict__)
     if form.validate_on_submit():
-        print(form.__dict__)
-        print(form.original_link.data)
-        print(form.short_link.data)
-        return render_template('form.html', form=form)
-    return render_template('form.html', form=form)
-    # if form.validate_on_submit():
-    #     original_link = form.original_link.data
-    #     if form.short_link.data is None:
-    #         pass
-    #     else:
-    #         short_link = form.short_link.data
-    #         pass
-    # # render_template()
-    # pass
-
-
-
-# @app.route('/api/opinions/<int:id>/', methods=['GET'])
-# @app.route('/api/id/', methods=['POST'])
+        original_link = form.original.data
+        print(50 * '-')
+        print(not form.short.data)
+        print(50 * '-')
+        print(URL_map.query.filter_by(short=form.short.data).exn)
+        # if not form.short.data:
+        #     short_id = get_unique_short_id()
+        # else:
+        #     short_id = form.short.data
+        # if URL_map.query.filter_by(short=form.short.data).first():
+        #     flash('Такой идентификатор уже есть в базе! Придумайте другой.')
+        #     return render_template('main.html', form=form)
+        # url_map = URL_map(
+        #     original=original_link,
+        #     short=short_id
+        # )
+        # db.session.add(url_map)
+        # db.session.commit()
+        # return redirect('/')
+    return render_template('main.html', form=form)

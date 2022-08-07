@@ -7,12 +7,12 @@ MAX_LENGTH = 16
 
 
 class ConvertURLForm(FlaskForm):
-    original = StringField(
+    original_link = StringField(
         'Оригинальный URL',
         validators=[DataRequired()]
     )
     # дописать кастомный валидатор на основе регулярки
-    short = StringField(
+    custom_id = StringField(
         'Желаемый короткий идентификатор',
         validators=[Optional(), Length(MIN_LENGTH, MAX_LENGTH)]
     )

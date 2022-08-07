@@ -17,3 +17,6 @@ class ConvertURLForm(FlaskForm):
         validators=[Optional(), Length(MIN_LENGTH, MAX_LENGTH)]
     )
     submit = SubmitField('Сконвертировать')
+
+    def validate_custom_id(self, field):
+        pass

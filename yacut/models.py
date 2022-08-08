@@ -1,4 +1,5 @@
 from datetime import datetime
+from urllib.parse import urljoin
 
 from . import db
 
@@ -13,8 +14,7 @@ class URL_map(db.Model):
     short = db.Column(db.String(16), unique=True, nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
-    def to_dict(self):
-        return dict(
-            url=self.original,
-            short_link=self.short
-        )
+    def get_short_link(self, base_url):
+        """Формирует готовую ссылку из базового URL и идентификатора."""
+        short_link = urljoin(base_url, self.short)
+        return short_link

@@ -4,9 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Length, Optional, ValidationError
 
-MIN_LENGTH = 6
-MAX_LENGTH = 16
-PATTERN = r'[a-zA-Z0-9]{6,16}'
+from .constants import MIN_LENGTH, MAX_LENGTH, PATTERN
 
 
 class ConvertURLForm(FlaskForm):
@@ -25,5 +23,5 @@ class ConvertURLForm(FlaskForm):
         check = re.fullmatch(PATTERN, custom_id.data)
         if not check:
             raise ValidationError(
-                'Недопустимые символы, используйте 0-9, a-z, A-Z.'
+                'Недопустимые символы. Используйте 0-9, a-z, A-Z.'
             )

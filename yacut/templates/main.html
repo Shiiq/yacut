@@ -31,7 +31,7 @@
                     <h5 class="text-center">{{ message }}</h5>
                   {% elif category == 'Success' %}
                     <h5 class="text-center">Ваша новая ссылка готова:</h5>
-                    <a class="text-center py-2 mb-3" href="{{ message }}">{{ message }}</a>
+                    <a href="{{ message }}">{{ message }}</a>
                   {% endif %}
                 {% endfor %}
               {% endif %}

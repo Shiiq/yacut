@@ -3,31 +3,40 @@ import re
 from flask import jsonify, request
 from sqlalchemy.sql.expression import exists
 
-from . import app, db, get_unique_id
+from . import app, db
 from .constants import BASE_URL, PATTERN
 from .error_handlers import InvalidAPIUsage
-from .models import URL_map
+from .models import URL_map, get_unique_id
 
 
 @app.route('/api/id/', methods=['POST'])
-def get_unique_short_id_api():
+def get_unique_short_id():
+    """
+    Функция для формирования короткой ссылки.
+    Параметр 'url' обязательный. Параметр 'custom_id' опциональный.
+    """
     data = request.get_json()
-
+    if not data:
+        raise InvalidAPIUsage('Отсутствует тело запроса')
     if 'url' not in data:
-        raise InvalidAPIUsage('Вы забыли указать ссылку.')
+        raise InvalidAPIUsage('"url" является обязательным полем!')
     original = data['url']
-
-    if 'custom_id' not in data:
+    # Если идентификатор не был введен или поле пустое, то генерируем сами
+    if 'custom_id' not in data or not data['custom_id']:
         id = get_unique_id()
+    # Если идентификатор был введен, то проверяем
+    # используемые символы и длину, и уникальность
     else:
         id = data['custom_id']
-        check = re.fullmatch(PATTERN, id)
+        symbols_check = re.fullmatch(PATTERN, id)
+        if not symbols_check:
+            raise InvalidAPIUsage(
+                'Указано недопустимое имя для короткой ссылки'
+            )
         if db.session.query(
                 exists().where(URL_map.short == id)
-        ).scalar() or not check:
-            raise InvalidAPIUsage(
-                'Недопустимый идентификатор! Придумайте другой.'
-            )
+        ).scalar():
+            raise InvalidAPIUsage(f'Имя "{id}" уже занято.')
 
     url_map = URL_map(
         original=original,
@@ -46,9 +55,12 @@ def get_unique_short_id_api():
 
 @app.route('/api/id/<id>/', methods=['GET'])
 def get_original_link(id):
+    """
+    Функция для поиска и отображения полной ссылки по поступившему id.
+    """
     url_map = URL_map.query.filter_by(short=id).first()
     if url_map is None:
-        raise InvalidAPIUsage('Такого идентификатора нет в базе данных.', 404)
+        raise InvalidAPIUsage('Указанный id не найден', 404)
     url = url_map.original
     result = dict(url=url)
     return jsonify(result), 200

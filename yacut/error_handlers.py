@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from flask import jsonify, render_template
 
 from . import app
@@ -5,7 +7,7 @@ from . import app
 
 class InvalidAPIUsage(Exception):
     # Если статус-код для ответа API не указан — вернётся код 400
-    status_code = 400
+    status_code = HTTPStatus.BAD_REQUEST
 
     # Конструктор класса InvalidAPIUsage принимает на вход
     # текст сообщения и статус-код ошибки (необязательно)
@@ -29,4 +31,4 @@ def invalid_api_usage(error):
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('404.html'), 404
+    return render_template('404.html'), HTTPStatus.NOT_FOUND

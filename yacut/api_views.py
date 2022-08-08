@@ -1,7 +1,9 @@
 import re
+from http import HTTPStatus
 
 from flask import jsonify, request
 from sqlalchemy.sql.expression import exists
+from werkzeug.exceptions import NotFound
 
 from . import app, db
 from .constants import BASE_URL, PATTERN
@@ -50,7 +52,7 @@ def get_unique_short_id():
         url=original,
         short_link=short_link
     )
-    return jsonify(result), 201
+    return jsonify(result), HTTPStatus.CREATED
 
 
 @app.route('/api/id/<id>/', methods=['GET'])
@@ -58,9 +60,10 @@ def get_original_link(id):
     """
     Функция для поиска и отображения полной ссылки по поступившему id.
     """
-    url_map = URL_map.query.filter_by(short=id).first()
-    if url_map is None:
-        raise InvalidAPIUsage('Указанный id не найден', 404)
+    try:
+        url_map = URL_map.query.filter_by(short=id).first_or_404()
+    except NotFound:
+        raise InvalidAPIUsage('Указанный id не найден', HTTPStatus.NOT_FOUND)
     url = url_map.original
     result = dict(url=url)
-    return jsonify(result), 200
+    return jsonify(result), HTTPStatus.OK
